@@ -530,38 +530,6 @@ def page_examples():
             st.button("Load into converter", key=f"ex_{e['regex']}", on_click=load_example, args=(e["regex"],))
 
 
-def page_learning():
-    st.header("Learning Resources & Theory")
-    f = ROOT / "docs" / "theory.md"
-    st.markdown(f.read_text(encoding="utf-8") if f.exists() else "docs/theory.md not found.")
-    st.subheader("Worked example (computed live): a(b|c)*")
-    ast = validate_regex("a(b|c)*")[2]
-    nfa, dfa = build_glushkov_nfa(ast), build_direct_dfa(ast)
-    st.write(f"Parsed: `{pretty(ast)}`")
-    st.write("**NFA analysis:**")
-    analysis_view(nfa.analysis, False)
-    c = st.columns(2)
-    c[0].write("**NFA table**")
-    c[0].dataframe(pd.DataFrame(nfa_rows(nfa)), hide_index=True)
-    c[1].write("**DFA table** (analysis includes end-marker #)")
-    c[1].dataframe(pd.DataFrame(dfa_rows(dfa)), hide_index=True)
-    st.write(f"NFA: {len(nfa.states)} states, {nfa.transition_count} transitions. DFA: {len(dfa.states)} states, {dfa.transition_count} transitions (including the trap).")
-
-
-def page_info():
-    st.header("Project Information")
-    st.markdown("""
-**Regex Automata Lab** - an Interactive Theory of Computation Learning and Simulation Laboratory.
-
-- **Dual-Mode System:** Beginner Learning Mode & Advanced Simulator Mode.
-- **Core Engine:** RE → NFA (Glushkov, epsilon-free) and RE → DFA (direct followpos), diagrams, tables, simulation, exports.
-- **Not included by design:** epsilon-NFA, separate NFA → DFA conversion, DFA minimization.
-- **Stack:** Python 3.11+, Streamlit, Graphviz, Pandas, Pytest.
-- **Syntax:** `|` alternation, implicit concatenation, `* + ?`, parentheses, `\\` escape.
-- **Docs:** see `README.md`, `docs/theory.md`, `docs/viva_questions.md`, `docs/demo_script.md`.
-""")
-
-
 # ---------------------------------------------------------------- PAGE ROUTER
 LEARN_PAGES = {
     "Home": page_home,
@@ -580,8 +548,6 @@ LEARN_PAGES = {
     "NFA vs DFA Visual Learning": lambda: render_nfa_vs_dfa_interactive(send_to_sim),
     "Challenges": lambda: render_challenges(send_to_sim),
     "Glossary & Notation": render_glossary,
-    "Theory & Viva": page_learning,
-    "Project Information": page_info,
 }
 
 SIM_PAGES = {
@@ -598,8 +564,6 @@ SIM_PAGES = {
     "NFA vs DFA Comparison": page_compare,
     "Step-by-Step Execution": page_steps,
     "Example Gallery": page_examples,
-    "Theory & Viva": page_learning,
-    "Project Information": page_info,
 }
 
 ALL_PAGES = {**LEARN_PAGES, **SIM_PAGES}
